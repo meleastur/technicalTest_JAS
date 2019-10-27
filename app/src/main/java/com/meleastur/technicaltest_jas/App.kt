@@ -9,6 +9,14 @@ class App: Application() {
 
     lateinit var component: ApplicationComponent
 
+    companion object {
+        lateinit var appInstance: App private set
+    }
+
+    // ==============================
+    // region Application
+    // ==============================
+
     override fun onCreate() {
         super.onCreate()
 
@@ -20,6 +28,12 @@ class App: Application() {
         }
     }
 
+    // endregion
+
+    // ==============================
+    // region Dagger
+    // ==============================
+
     fun initApp() {
         component = DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(this)).build()
@@ -30,7 +44,5 @@ class App: Application() {
         return component
     }
 
-    companion object {
-        lateinit var appInstance: App private set
-    }
+    // endregion
 }

@@ -9,22 +9,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-    <activity
-        android:name=".ui.splash.SplashActivity_"
-        android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
-        android:noHistory="true"
-        android:screenOrientation="portrait">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        <activity
+            android:name=".ui.splash.SplashActivity_"
+            android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-    <activity
-        android:name=".ui.main.MainActivity_"
-        android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="adjustPan|adjustResize" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.main.MainActivity_" />
 
-</application>
+    </application>
 </manifest>
