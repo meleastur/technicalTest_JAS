@@ -35,7 +35,7 @@ dependencies {
     // android annotations
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'androidx.annotation:annotation:1.1.0'
-    annotationProcessor "org.androidannotations:androidannotations:$annotation_version"
+    kapt "org.androidannotations:androidannotations:$annotation_version"
     implementation "org.androidannotations:androidannotations-api:$annotation_version"
 
     // retrofit + gson
