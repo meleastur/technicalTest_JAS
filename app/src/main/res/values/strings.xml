@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TechnicalTest_JAS</string>
+
+    <!--SearchImages Errores-->
+    <string name="error_default">No hay datos a mostrar</string>
+
+    <!--SearchImages item-->
+    <string name="search_image_autor">Autor:</string>
+    <string name="search_image_title">Titúlo:</string>
+
+    <!--Menu-->
+    <string name="menu_search">Buscar</string>
+
 </resources>

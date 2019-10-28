@@ -43,6 +43,10 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
+    // okhttp
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpClient_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttpClient_version"
+
     // rx
     implementation "io.reactivex.rxjava2:rxjava:$rxjava2_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
@@ -57,6 +61,10 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger2_version"
     compileOnly 'javax.annotation:jsr250-api:1.0'
     implementation 'javax.inject:javax.inject:1'
+
+    // glide
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
 
     // ui
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

@@ -5,15 +5,21 @@ import androidx.appcompat.widget.Toolbar
 import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.di.component.DaggerMainActivityComponent
 import com.meleastur.technicaltest_jas.di.module.MainActivityModule
+import com.meleastur.technicaltest_jas.ui.search_images.SearchImagesFragment
+import com.meleastur.technicaltest_jas.util.Constants.Companion.SEARCH_IMAGES_FRAG
 import org.androidannotations.annotations.AfterViews
 import org.androidannotations.annotations.EActivity
 import org.androidannotations.annotations.ViewById
+import javax.inject.Inject
 
 @EActivity(R.layout.activity_main)
-open class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity(), MainContract.View {
+
+    @Inject
+    lateinit var presenter: MainContract.Presenter
 
     // ==============================
-    // region ViewByID
+    // region Views
     // ==============================
 
     @ViewById(R.id.toolbar)
@@ -34,6 +40,7 @@ open class MainActivity : AppCompatActivity() {
 
 
         injectDependency()
+        presenter.attach(this)
     }
 
     // endregion
@@ -48,6 +55,19 @@ open class MainActivity : AppCompatActivity() {
             .build()
 
         activityComponent.inject(this)
+    }
+
+    // endregion
+
+    // ==============================
+    // region MainContract.View
+    // ==============================
+    @AfterViews
+    override fun showSearchImagesFragment() {
+        supportFragmentManager.beginTransaction()
+            .disallowAddToBackStack()
+            .replace(R.id.frameLayout, SearchImagesFragment().newInstance(), SEARCH_IMAGES_FRAG)
+            .commit()
     }
 
     // endregion
