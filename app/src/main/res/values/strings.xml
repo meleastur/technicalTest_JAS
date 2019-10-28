@@ -5,10 +5,15 @@
     <string name="error_default">No hay datos a mostrar</string>
 
     <!--SearchImages item-->
-    <string name="search_image_autor">Autor:</string>
-    <string name="search_image_title">Titúlo:</string>
+    <string name="search_image_autor">Autor</string>
+    <string name="search_image_title">Titúlo</string>
 
     <!--Menu-->
     <string name="menu_search">Buscar</string>
+
+    <!--DetailImageFragment-->
+    <string name="detail_image_date">Fecha</string>
+    <string name="detail_image_description">Descripción</string>
+
 
 </resources>
