@@ -4,7 +4,8 @@ class Constants {
     companion object {
 
         // Fragments Tags
-        const val SEARCH_IMAGES_FRAG = "SearchImagesFragment"
+        const val SEARCH_IMAGES = "SearchImagesFragment"
+        const val DETAIL_IMAGE = "DetailImageFragment"
 
         // Flikr API
         const val BASE_URL = "https://api.flickr.com"

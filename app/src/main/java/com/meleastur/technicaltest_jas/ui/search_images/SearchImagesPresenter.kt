@@ -39,9 +39,7 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ imageResponse: ImagesResponse? ->
                 view.hideEmptyData()
-
                 getIdToPhotoInfo(imageResponse!!)
-                //  view.loadDataSuccess(imageResponse!!)
             }, { error ->
                 view.showProgress(false)
                 view.showEmptyDataError(error.localizedMessage)
@@ -62,7 +60,6 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
             .subscribe({ photoInfoResponse: PhotoInfoResponse? ->
                 if (isFinished) {
                     view.showProgress(false)
-                    view.hideEmptyData()
                     view.loadDataSuccess(searchImageList)
                 } else {
                     getSearchImages(photoInfoResponse!!, urlThumbnail, title)

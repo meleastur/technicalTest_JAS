@@ -11,7 +11,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +19,7 @@ import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.di.component.DaggerSearchImageFragmentComponent
 import com.meleastur.technicaltest_jas.di.module.SearchImagesFragmentModule
 import com.meleastur.technicaltest_jas.model.SearchImage
+import com.meleastur.technicaltest_jas.ui.main.MainActivity
 import org.androidannotations.annotations.EFragment
 import org.androidannotations.annotations.OptionsMenu
 import org.androidannotations.annotations.ViewById
@@ -128,8 +128,8 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     // ==============================
     // region  SearchImagesAdapter.onItemClickListener
     // ==============================
-    override fun itemDetail(imageId: String) {
-        Toast.makeText(activity, "Id: " + imageId, Toast.LENGTH_SHORT).show()
+    override fun itemDetail(searchImage: SearchImage) {
+        (activity as MainActivity).presenter.showDetailImageFragment(searchImage)
     }
 
     // endregion
@@ -184,6 +184,8 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
 
         if (!TextUtils.isEmpty(query)) {
             showProgress(true)
+            hideEmptyData()
+
             val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(searchView.windowToken, 0)
 
