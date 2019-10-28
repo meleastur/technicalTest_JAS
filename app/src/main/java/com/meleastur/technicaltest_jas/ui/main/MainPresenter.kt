@@ -1,4 +1,5 @@
 package com.meleastur.technicaltest_jas.ui.main
+import com.meleastur.technicaltest_jas.model.SearchImage
 import io.reactivex.disposables.CompositeDisposable
 
 class MainPresenter: MainContract.Presenter {
@@ -16,5 +17,9 @@ class MainPresenter: MainContract.Presenter {
     override fun attach(view: MainContract.View) {
         this.view = view
         view.showSearchImagesFragment()
+    }
+
+    override fun showDetailImageFragment(searchImage: SearchImage) {
+        view.showDetailImageFragment(searchImage)
     }
 }
