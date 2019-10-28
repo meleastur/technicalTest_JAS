@@ -5,10 +5,14 @@ import androidx.appcompat.widget.Toolbar
 import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.di.component.DaggerMainActivityComponent
 import com.meleastur.technicaltest_jas.di.module.MainActivityModule
+import com.meleastur.technicaltest_jas.model.SearchImage
+import com.meleastur.technicaltest_jas.ui.detail_image.DetailImageFragment
 import com.meleastur.technicaltest_jas.ui.search_images.SearchImagesFragment
-import com.meleastur.technicaltest_jas.util.Constants.Companion.SEARCH_IMAGES_FRAG
+import com.meleastur.technicaltest_jas.util.Constants.Companion.DETAIL_IMAGE
+import com.meleastur.technicaltest_jas.util.Constants.Companion.SEARCH_IMAGES
 import org.androidannotations.annotations.AfterViews
 import org.androidannotations.annotations.EActivity
+import org.androidannotations.annotations.OptionsItem
 import org.androidannotations.annotations.ViewById
 import javax.inject.Inject
 
@@ -38,11 +42,35 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         }
 
-
         injectDependency()
         presenter.attach(this)
     }
 
+    // Para el atrás del DetailImageFragment
+
+    @OptionsItem(android.R.id.home)
+    internal fun homeSelected() {
+        onBackPressed()
+    }
+
+    override fun onBackPressed() {
+        var detailFragment = supportFragmentManager.findFragmentByTag(DETAIL_IMAGE)
+
+        if (detailFragment != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+            var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
+
+            supportFragmentManager.beginTransaction()
+                .remove(detailFragment!!)
+                .show(searchFragment!!)
+                .commit()
+
+        } else {
+            super.onBackPressed()
+        }
+
+    }
     // endregion
 
     // ==============================
@@ -65,8 +93,18 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
     @AfterViews
     override fun showSearchImagesFragment() {
         supportFragmentManager.beginTransaction()
-            .disallowAddToBackStack()
-            .replace(R.id.frameLayout, SearchImagesFragment().newInstance(), SEARCH_IMAGES_FRAG)
+            .replace(R.id.frameLayout, SearchImagesFragment().newInstance(), SEARCH_IMAGES)
+            .commit()
+    }
+
+    override fun showDetailImageFragment(searchImage: SearchImage) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
+
+        supportFragmentManager.beginTransaction()
+            .hide(searchFragment!!)
+            .add(R.id.frameLayout, DetailImageFragment().newInstance(searchImage), DETAIL_IMAGE)
             .commit()
     }
 

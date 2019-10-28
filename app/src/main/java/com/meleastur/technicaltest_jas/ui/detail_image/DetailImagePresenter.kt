@@ -13,7 +13,6 @@ class DetailImagePresenter : DetailImageContract.Presenter {
     // region  DetailImageContract.Presenter
     // ==============================
     override fun subscribe() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun unsubscribe() {

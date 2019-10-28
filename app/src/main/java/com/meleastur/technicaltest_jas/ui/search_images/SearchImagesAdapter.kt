@@ -50,7 +50,7 @@ class SearchImagesAdapter(
         }
 
         holder.layout!!.setOnClickListener {
-            listener.itemDetail(searchImage.id)
+            listener.itemDetail(searchImage)
         }
     }
 
@@ -76,6 +76,6 @@ class SearchImagesAdapter(
     }
 
     interface onItemClickListener {
-        fun itemDetail(imageId: String)
+        fun itemDetail(searchImage: SearchImage)
     }
 }
