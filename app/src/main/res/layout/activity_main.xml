@@ -15,8 +15,8 @@
             android:layout_height="?android:attr/actionBarSize"
             android:background="@color/colorPrimary"
             app:titleTextColor="@android:color/white"
-            app:layout_collapseMode="pin"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:theme="@style/MyToolbar"
+            app:layout_collapseMode="pin" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
