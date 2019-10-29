@@ -10,11 +10,12 @@ class SearchImagesContract {
         fun showErrorMessage(error: String)
         fun showEmptyDataError(error:String)
         fun hideEmptyData()
-        fun loadDataSuccess(searchImage: ArrayList<SearchImage>)
+        fun loadDataSuccess(searchImage: ArrayList<SearchImage>, isToAddMore: Boolean)
     }
 
     interface Presenter: BaseContract.Presenter<View> {
         fun searchImageByText(text: String)
-        fun getPhotoInfo(photoId: String, urlThumbnail: String, title: String, isFinished: Boolean)
+        fun searchImageByText(text: String, page: Int)
+        fun getPhotoInfo(photoId: String, urlThumbnail: String, title: String, page: Int, perPage: Int, isFinished: Boolean, isToAddMore: Boolean)
     }
 }

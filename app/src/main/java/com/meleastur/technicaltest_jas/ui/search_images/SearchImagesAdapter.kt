@@ -1,6 +1,7 @@
 package com.meleastur.technicaltest_jas.ui.search_images
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,13 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.model.SearchImage
 import java.net.URL
 
+
 class SearchImagesAdapter(
     private val context: Context,
-    val searchImageList: ArrayList<SearchImage>, fragment: Fragment
+    var searchImageList: ArrayList<SearchImage>, fragment: Fragment
 ) : RecyclerView.Adapter<SearchImagesAdapter.ListViewHolder>() {
 
     private val listener: SearchImagesAdapter.onItemClickListener
@@ -29,6 +30,7 @@ class SearchImagesAdapter(
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         var searchImage = searchImageList[position]
+        listener.itemPositionChange(searchImage.page, searchImageList.size - 1, position + 1)
 
         holder.title.text = searchImage.title
         holder.author.text = searchImage.author
@@ -42,9 +44,10 @@ class SearchImagesAdapter(
                 .load(url)
                 .centerCrop()
                 .into(holder.image)
-        } catch (e: UninitializedPropertyAccessException) {
+        } catch (e: Exception) {
+            Log.e("onBindViewHolder", "SearchImages - Glide: " + e.localizedMessage.toString())
             Glide.with(fragment)
-                .load(R.drawable.ic_photo)
+                .load(com.meleastur.technicaltest_jas.R.drawable.ic_photo)
                 .centerCrop()
                 .into(holder.image)
         }
@@ -52,12 +55,18 @@ class SearchImagesAdapter(
         holder.layout!!.setOnClickListener {
             listener.itemDetail(searchImage)
         }
+
+        if (position == searchImageList.size - 1) {
+            listener.itemBottomReached()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
         val itemView = LayoutInflater.from(context)
-                .inflate(com.meleastur.technicaltest_jas.R.layout.item_search_images, parent, false)
-        return SearchImagesAdapter.ListViewHolder(itemView)
+            .inflate(com.meleastur.technicaltest_jas.R.layout.item_search_images, parent, false)
+        val holder = SearchImagesAdapter.ListViewHolder(itemView)
+        holder.setIsRecyclable(false)
+        return holder
     }
 
     override fun getItemCount(): Int {
@@ -77,5 +86,9 @@ class SearchImagesAdapter(
 
     interface onItemClickListener {
         fun itemDetail(searchImage: SearchImage)
+
+        fun itemPositionChange(page: Int, perPage: Int, position: Int)
+
+        fun itemBottomReached()
     }
 }

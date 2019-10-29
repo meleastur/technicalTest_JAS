@@ -1,6 +1,9 @@
 package com.meleastur.technicaltest_jas.ui.detail_image
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -34,19 +37,22 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
     // region Views
     // ==============================
     @ViewById(R.id.image_thumbnail)
-    protected lateinit var thumbnailImage : ImageView
+    protected lateinit var thumbnailImage: ImageView
 
     @ViewById(R.id.image_author)
-    protected lateinit var author : TextView
+    protected lateinit var author: TextView
 
     @ViewById(R.id.image_title)
-    protected lateinit var title : TextView
+    protected lateinit var title: TextView
 
     @ViewById(R.id.image_date)
-    protected lateinit var date : TextView
+    protected lateinit var date: TextView
+
+    @ViewById(R.id.image_description_title)
+    protected lateinit var descriptionTitle: TextView
 
     @ViewById(R.id.image_description)
-    protected lateinit var description : TextView
+    protected lateinit var description: TextView
 
     // endregion
 
@@ -83,16 +89,22 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
             Glide.with(this)
                 .load(url)
                 .into(thumbnailImage)
-        } catch (e: UninitializedPropertyAccessException) {
+        } catch (e: Exception) {
+            Log.e("onBindViewHolder", "DetailImage - Glide: " + e.localizedMessage)
             Glide.with(this)
                 .load(R.drawable.ic_photo)
                 .into(thumbnailImage)
         }
-
         author.text = searchImage.author
         title.text = searchImage.title
         date.text = searchImage.date
-        description.text = searchImage.description
+
+        if (!TextUtils.isEmpty(searchImage.description)) {
+            description.text = searchImage.description
+        } else {
+            description.visibility = View.GONE
+            descriptionTitle.visibility = View.INVISIBLE
+        }
     }
 
     override fun onDestroyView() {
@@ -126,7 +138,7 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
     // region Click
     // ==============================
     @Click(R.id.image_thumbnail)
-    fun clickThumbnailImage(){
+    fun clickThumbnailImage() {
         // Open viewer 
     }
 

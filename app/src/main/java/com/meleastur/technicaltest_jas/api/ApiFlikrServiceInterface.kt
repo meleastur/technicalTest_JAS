@@ -12,7 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-const val URLS = "url_sq, url_t, url_s, url_q, url_m, url_n, url_z, url_c, url_l, url_o"
+const val URLS = " url_m, url_n, url_z, url_o"
+const val PER_PAGE = 50
 
 interface ApiFlikrServiceInterface {
 
@@ -21,8 +22,19 @@ interface ApiFlikrServiceInterface {
     fun searchPhotos(
         @Query("api_key") apiKey: String,
         @Query("text") text: String? = "",
+        @Query("per_page") perPage: Int? = PER_PAGE,
         @Query("extras") extras: String = URLS
-    ):  Observable<ImagesResponse>
+    ): Observable<ImagesResponse>
+
+    //flickr.photos.search
+    @GET("services/rest/?method=flickr.photos.search&nojsoncallback=1&format=json")
+    fun searchPhotosByPage(
+        @Query("api_key") apiKey: String,
+        @Query("text") text: String? = "",
+        @Query("page") page: Int? = 0,
+        @Query("per_page") perPage: Int? = PER_PAGE,
+        @Query("extras") extras: String = URLS
+    ): Observable<ImagesResponse>
 
     //flickr.photos.getInfo
     @GET("services/rest/?method=flickr.photos.getInfo&nojsoncallback=1&format=json")
