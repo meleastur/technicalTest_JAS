@@ -7,9 +7,11 @@ import com.meleastur.technicaltest_jas.di.module.SplashActivityModule
 import com.meleastur.technicaltest_jas.ui.main.MainActivity_
 import org.androidannotations.annotations.AfterViews
 import org.androidannotations.annotations.EActivity
+import java.util.*
+import kotlin.concurrent.schedule
 
 @EActivity(R.layout.activity_splash)
-open class SplashActivity: AppCompatActivity() {
+open class SplashActivity : AppCompatActivity() {
 
     // ==============================
     // region Activity
@@ -19,7 +21,9 @@ open class SplashActivity: AppCompatActivity() {
     protected fun afterViews() {
         injectDependency()
 
-        navigateMain()
+        Timer("navigateMain", false).schedule(1500) {
+            navigateMain()
+        }
     }
 
     // endregion
@@ -30,8 +34,8 @@ open class SplashActivity: AppCompatActivity() {
 
     private fun injectDependency() {
         val activityComponent = DaggerSplashActivityComponent.builder()
-                .splashActivityModule(SplashActivityModule(this))
-                .build()
+            .splashActivityModule(SplashActivityModule(this))
+            .build()
 
         activityComponent.inject(this)
     }

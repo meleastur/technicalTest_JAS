@@ -16,7 +16,7 @@
     </style>
 
     <style name="MyProgressBar">
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 </resources>

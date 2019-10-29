@@ -11,6 +11,8 @@ open class SearchImage() : Parcelable {
     var author: String = ""
     var date: String = ""
     var description: String = ""
+    var page: Int = 0
+    var perPage: Int = 0
 
     constructor(parcel: Parcel) : this() {
         id = parcel.readString()!!
@@ -19,6 +21,8 @@ open class SearchImage() : Parcelable {
         author = parcel.readString()!!
         date = parcel.readString()!!
         description = parcel.readString()!!
+        page = parcel.readInt()
+        perPage = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -28,6 +32,8 @@ open class SearchImage() : Parcelable {
         parcel.writeString(author)
         parcel.writeString(date)
         parcel.writeString(description)
+        parcel.writeInt(page)
+        parcel.writeInt(perPage)
     }
 
     override fun describeContents(): Int {

@@ -6,14 +6,14 @@ open class Image {
     lateinit var id: String
     lateinit var title: String
 
-    @SerializedName("url_l")
-    lateinit var url_l: String
+    // https://www.flickr.com/services/api/misc.urls.html
+    // z	medium 640, 640 on longest side
+    // m	small, 240 on longest side
+    // n	small, 320 on longest side
+    // o	original image, either a jpg, gif or png, depending on source format
 
     @SerializedName("url_o")
     lateinit var url_o: String
-
-    @SerializedName("url_c")
-    lateinit var url_c: String
 
     @SerializedName("url_z")
     lateinit var url_z: String
@@ -23,16 +23,4 @@ open class Image {
 
     @SerializedName("url_m")
     lateinit var url_m: String
-
-    @SerializedName("url_q")
-    lateinit var url_q: String
-
-    @SerializedName("url_s")
-    lateinit var url_s: String
-
-    @SerializedName("url_t")
-    lateinit var url_t: String
-
-    @SerializedName("url_sq")
-    lateinit var url_sq: String
 }
