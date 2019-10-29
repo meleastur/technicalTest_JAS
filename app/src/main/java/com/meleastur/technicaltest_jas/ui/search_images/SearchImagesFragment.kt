@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.di.component.DaggerFragmentComponent
 import com.meleastur.technicaltest_jas.di.module.FragmentModule
@@ -56,11 +56,11 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     @ViewById(R.id.image_error)
     protected lateinit var imageError: ImageView
 
-    @ViewById(R.id.chip_pagination)
-    protected lateinit var chipPagination: Chip
+    @ViewById(R.id.fab_pagination)
+    protected lateinit var fabPagination: ExtendedFloatingActionButton
 
-    @ViewById(R.id.chip_elements)
-    protected lateinit var chipElements: Chip
+    @ViewById(R.id.fab_elements)
+    protected lateinit var fabElements: ExtendedFloatingActionButton
 
     // endregion
 
@@ -143,12 +143,12 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
 
     override fun loadDataSuccess(searchImage: ArrayList<SearchImage>, isToAddMore: Boolean) {
         if (!isToAddMore) {
-            chipPagination.visibility = View.VISIBLE
-            chipPagination.text =
+            fabPagination.visibility = View.VISIBLE
+            fabPagination.text =
                 getString(R.string.search_image_pagination, searchImage[0].page.toString())
 
-            chipElements.visibility = View.VISIBLE
-            chipElements.text =
+            fabElements.visibility = View.VISIBLE
+            fabElements.text =
                 getString(R.string.search_image_elements, "1", searchImage[0].perPage.toString())
 
             searchImageAdapter = SearchImagesAdapter(activity!!, searchImage, this)
@@ -276,10 +276,10 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
             actualPerPage = perPage
         }
 
-        chipPagination.text =
+        fabPagination.text =
             getString(R.string.search_image_pagination, page.toString())
 
-        chipElements.text =
+        fabElements.text =
             getString(
                 R.string.search_image_elements, position.toString(), actualPerPage.toString()
             )

@@ -15,25 +15,26 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_search_images" />
 
-    <com.google.android.material.chip.Chip
-        android:id="@+id/chip_pagination"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_pagination"
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="42dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/medium"
         android:layout_marginEnd="@dimen/x_medium"
-        android:clickable="false"
         android:text="@string/search_image_pagination"
-        android:textAlignment="center"
-        android:textColor="@color/gray_dark"
-        android:textSize="@dimen/text_medium"
-        android:theme="@style/Widget.MaterialComponents.Chip.Filter"
+        android:textAllCaps="false"
+        android:textSize="@dimen/text_small"
+        android:clickable="false"
         android:visibility="gone"
-        app:chipBackgroundColor="@color/colorPrimary"
-        app:chipCornerRadius="12dp"
-        app:chipStrokeColor="@color/colorAccent"
-        app:chipStrokeWidth="1dp"
-        app:closeIconEnabled="false" />
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/colorAccent"
+        android:textColor="@color/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorAccent_unfocused"
+        tools:ignore="RelativeOverlap" />
 
     <RelativeLayout
         android:id="@+id/empty_state"
@@ -74,24 +75,26 @@
         android:theme="@style/MyProgressBar"
         android:visibility="gone" />
 
-    <com.google.android.material.chip.Chip
-        android:id="@+id/chip_elements"
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_elements"
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="42dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/medium"
         android:layout_marginEnd="@dimen/x_medium"
-        android:clickable="false"
         android:text="@string/search_image_elements"
-        android:textAlignment="center"
-        android:textColor="@color/gray_dark"
-        android:textSize="@dimen/text_medium"
-        android:theme="@style/Widget.MaterialComponents.Chip.Filter"
+        android:textAllCaps="false"
+        android:layout_marginBottom="@dimen/large"
+        android:textSize="@dimen/text_small"
+        android:clickable="false"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/colorAccent"
         android:visibility="gone"
-        app:chipBackgroundColor="@color/colorPrimary"
-        app:chipCornerRadius="12dp"
-        app:chipStrokeColor="@color/colorAccent"
-        app:chipStrokeWidth="1dp"
-        app:closeIconEnabled="false" />
+        android:textColor="@color/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorAccent_unfocused"
+        tools:ignore="RelativeOverlap" />
 
 </RelativeLayout>

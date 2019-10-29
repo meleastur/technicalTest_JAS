@@ -20,7 +20,7 @@
     <string name="detail_image_description">Descripción</string>
     <string name="search_image_pagination">Página %1$s</string>
     <string name="search_image_pagination2">Pág %1$s/%2$s</string>
-    <string name="search_image_elements">Imágen %1$s de %2$s</string>
+    <string name="search_image_elements">Imágen %1$s/%2$s</string>
     <string name="share_button">Compartir</string>
 
     <!--ShareImage Errores-->
