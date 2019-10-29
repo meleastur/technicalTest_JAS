@@ -3,7 +3,7 @@ package com.meleastur.technicaltest_jas.ui.main
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.meleastur.technicaltest_jas.R
-import com.meleastur.technicaltest_jas.di.component.DaggerMainActivityComponent
+import com.meleastur.technicaltest_jas.di.component.DaggerActivityComponent
 import com.meleastur.technicaltest_jas.di.module.MainActivityModule
 import com.meleastur.technicaltest_jas.model.SearchImage
 import com.meleastur.technicaltest_jas.ui.detail_image.DetailImageFragment
@@ -47,6 +47,12 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.attach(this)
     }
 
+    fun changeTitleSearch(text: String){
+        if (supportActionBar != null) {
+            supportActionBar!!.title = text
+        }
+    }
+
     // Para el atrás del DetailImageFragment
 
     @OptionsItem(android.R.id.home)
@@ -66,7 +72,8 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
             var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
 
             supportFragmentManager.beginTransaction()
-                .remove(detailFragment!!)
+                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out)
+                .remove(detailFragment)
                 .show(searchFragment!!)
                 .commit()
 
@@ -82,7 +89,7 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
     // ==============================
 
     private fun injectDependency() {
-        val activityComponent = DaggerMainActivityComponent.builder()
+        val activityComponent = DaggerActivityComponent.builder()
             .mainActivityModule(MainActivityModule(this))
             .build()
 
@@ -102,6 +109,7 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
         }
 
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.animator.enter_from_right, R.animator.exit_to_right)
             .replace(R.id.frameLayout, SearchImagesFragment().newInstance(), SEARCH_IMAGES)
             .commit()
     }
@@ -115,6 +123,7 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
         var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
 
         supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.animator.fade_in, R.animator.fade_out)
             .hide(searchFragment!!)
             .add(R.id.frameLayout, DetailImageFragment().newInstance(searchImage), DETAIL_IMAGE)
             .commit()

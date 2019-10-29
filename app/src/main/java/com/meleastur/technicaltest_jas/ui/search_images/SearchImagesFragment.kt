@@ -12,13 +12,14 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.meleastur.technicaltest_jas.R
-import com.meleastur.technicaltest_jas.di.component.DaggerSearchImageFragmentComponent
-import com.meleastur.technicaltest_jas.di.module.SearchImagesFragmentModule
+import com.meleastur.technicaltest_jas.di.component.DaggerFragmentComponent
+import com.meleastur.technicaltest_jas.di.module.FragmentModule
 import com.meleastur.technicaltest_jas.model.SearchImage
 import com.meleastur.technicaltest_jas.ui.main.MainActivity
 import org.androidannotations.annotations.Click
@@ -69,8 +70,7 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
 
     lateinit var searchImageAdapter: SearchImagesAdapter
     lateinit var searchView: SearchView
-    var queryFilterOld: String? = null
-    var queryFilterSelected: String? = null
+    var textSelected: String? = null
 
     var isLoading: Boolean = false
     var actualPage: Int = 0
@@ -131,7 +131,12 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
         emptyStateParent.visibility = View.VISIBLE
 
         imageError.visibility = View.VISIBLE
-        imageError.setImageDrawable(activity!!.resources.getDrawable(R.drawable.ic_report_problem))
+        imageError.setImageDrawable(
+            ContextCompat.getDrawable(
+                activity!!.applicationContext,
+                R.drawable.ic_report_problem
+            )
+        )
         textError.visibility = View.VISIBLE
         textError.text = error
     }
@@ -158,12 +163,12 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
             searchImageAdapter.notifyDataSetChanged()
         }
 
-        Log.d("Pages", "isToAddMore" + isToAddMore)
-        Log.d("Pages", "actualPage" + actualPage)
-        Log.d("Pages", "actualPerPage" + actualPerPage)
-
         showProgress(false)
-
+        if (!TextUtils.isEmpty(textSelected)) {
+            (activity as MainActivity).changeTitleSearch(textSelected!!)
+        } else {
+            (activity as MainActivity).changeTitleSearch(getString(R.string.search_image_frag_title))
+        }
     }
 
     // endregion
@@ -183,7 +188,7 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
         if (!isLoading) {
             showProgress(true)
             actualPage += 1
-            presenter.searchImageByText(queryFilterSelected!!, actualPage)
+            presenter.searchImageByText(textSelected!!, actualPage)
         }
 
     }
@@ -206,8 +211,8 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     // region Dagger
     // ==============================
     private fun injectDependency() {
-        val listComponent = DaggerSearchImageFragmentComponent.builder()
-            .searchImagesFragmentModule(SearchImagesFragmentModule())
+        val listComponent = DaggerFragmentComponent.builder()
+            .fragmentModule(FragmentModule())
             .build()
 
         listComponent.inject(this)
@@ -240,11 +245,11 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
             val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(searchView.windowToken, 0)
 
-            queryFilterSelected = query
+            textSelected = query
             isLoading = true
             actualPerPage = 0
             actualPage = 0
-            presenter.searchImageByText(queryFilterSelected!!)
+            presenter.searchImageByText(textSelected!!)
 
             return true
         }
@@ -264,7 +269,6 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     // ==============================
     private fun updateChipPagination(page: Int, perPage: Int, position: Int) {
 
-        Log.d("Pages", "pages positions" + page)
         if (actualPage == 0) {
             actualPage = page
         }

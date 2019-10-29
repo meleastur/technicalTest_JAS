@@ -115,25 +115,25 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
             page = imageResponse.photos.page
             perPage = imageResponse.photos.photos.size - 1
             try {
-                //z	medium 640, 640 on longest side
-                url = image.url_z
+                url = image.url_l
             } catch (e: Exception) {
                 try {
-                    //m	small, 240 on longest side
-                    url = image.url_m
+                    url = image.url_z
                 } catch (e: Exception) {
                     try {
-                        //n	small, 320 on longest side
-                        url = image.url_n
+                        url = image.url_m
                     } catch (e: Exception) {
                         try {
-                            //o	original image, either a jpg, gif or png, depending on source format
-                            url = image.url_o
+                            url = image.url_n
                         } catch (e: Exception) {
-                            Log.e(
-                                "parseIdToGetPhotoInfo",
-                                "SearchImagePresenter - parseo antes de getPhotoInfo : " + e.localizedMessage.toString()
-                            )
+                            try {
+                                url = image.url_o
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "parseIdToGetPhotoInfo",
+                                    "SearchImagePresenter - parseo antes de getPhotoInfo : " + e.localizedMessage.toString()
+                                )
+                            }
                         }
                     }
                 }
