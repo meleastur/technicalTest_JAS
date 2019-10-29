@@ -1,6 +1,7 @@
 package com.meleastur.technicaltest_jas.ui.search_images
 
 import android.text.TextUtils
+import android.util.Log
 import com.meleastur.technicaltest_jas.api.ApiFlikrServiceInterface
 import com.meleastur.technicaltest_jas.model.SearchImage
 import com.meleastur.technicaltest_jas.model.flikrapi.photo_info.PhotoInfoResponse
@@ -9,6 +10,7 @@ import com.meleastur.technicaltest_jas.util.Constants.Companion.API_KEY
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+
 
 class SearchImagesPresenter : SearchImagesContract.Presenter {
 
@@ -39,7 +41,22 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ imageResponse: ImagesResponse? ->
                 view.hideEmptyData()
-                getIdToPhotoInfo(imageResponse!!)
+                parseIdToGetPhotoInfo(imageResponse!!, false)
+            }, { error ->
+                view.showProgress(false)
+                view.showEmptyDataError(error.localizedMessage)
+                view.showErrorMessage(error.localizedMessage)
+            })
+
+        subscriptions.add(subscribe)
+    }
+
+    override fun searchImageByText(text: String, page: Int) {
+        var subscribe = api.searchPhotosByPage(API_KEY, text, page).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ imageResponse: ImagesResponse? ->
+                view.hideEmptyData()
+                parseIdToGetPhotoInfo(imageResponse!!, true)
             }, { error ->
                 view.showProgress(false)
                 view.showEmptyDataError(error.localizedMessage)
@@ -53,16 +70,21 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
         photoId: String,
         urlThumbnail: String,
         title: String,
-        isFinished: Boolean
+        page: Int,
+        perPage: Int,
+        isFinished: Boolean,
+        isToAddMore: Boolean
     ) {
         var subscribe = api.getPhotoInfo(API_KEY, photoId).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ photoInfoResponse: PhotoInfoResponse? ->
                 if (isFinished) {
-                    view.showProgress(false)
-                    view.loadDataSuccess(searchImageList)
+                    val searchImageListOrdered = ArrayList<SearchImage>()
+                    searchImageListOrdered.addAll(searchImageList.sortedWith(compareBy({ it.page })))
+
+                    view.loadDataSuccess(searchImageListOrdered, isToAddMore)
                 } else {
-                    getSearchImages(photoInfoResponse!!, urlThumbnail, title)
+                    parseToSearchImages(photoInfoResponse!!, urlThumbnail, title, page, perPage)
                 }
             }, { error ->
                 view.showProgress(false)
@@ -79,20 +101,57 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
     // region Private functions
     // ==============================
 
-    private fun getIdToPhotoInfo(imageResponse: ImagesResponse) {
+    private fun parseIdToGetPhotoInfo(imageResponse: ImagesResponse, isToAddMore: Boolean) {
+        var id: String = ""
+        var url: String = ""
+        var title: String = ""
+        var page: Int = 0
+        var perPage: Int = 0
+
         for (image in imageResponse.photos.photos) {
+
+            id = image.id
+            title = image.title
+            page = imageResponse.photos.page
+            perPage = imageResponse.photos.photos.size - 1
             try {
-                getPhotoInfo(image.id, image.url_z, image.title, false)
+                //z	medium 640, 640 on longest side
+                url = image.url_z
             } catch (e: Exception) {
+                try {
+                    //m	small, 240 on longest side
+                    url = image.url_m
+                } catch (e: Exception) {
+                    try {
+                        //n	small, 320 on longest side
+                        url = image.url_n
+                    } catch (e: Exception) {
+                        try {
+                            //o	original image, either a jpg, gif or png, depending on source format
+                            url = image.url_o
+                        } catch (e: Exception) {
+                            Log.e(
+                                "parseIdToGetPhotoInfo",
+                                "SearchImagePresenter - parseo antes de getPhotoInfo : " + e.localizedMessage.toString()
+                            )
+                        }
+                    }
+                }
             }
+
+            getPhotoInfo(id, url, title, page, perPage, false, isToAddMore)
+
         }
-        getPhotoInfo("", "", "", true)
+
+        getPhotoInfo(id, url, title, page, perPage, true, isToAddMore)
     }
 
-    private fun getSearchImages(
+    private fun parseToSearchImages(
         photoInfoResponse: PhotoInfoResponse,
         urlThumbnail: String,
-        title: String
+        title: String,
+        page: Int,
+        perPage: Int
     ) {
         var searchImage = SearchImage()
         searchImage.id = photoInfoResponse.photo.id
@@ -106,6 +165,9 @@ class SearchImagesPresenter : SearchImagesContract.Presenter {
         searchImage.title = title
 
         searchImage.description = photoInfoResponse.photo.description.content
+
+        searchImage.page = page
+        searchImage.perPage = perPage
 
         searchImageList.add(searchImage)
     }

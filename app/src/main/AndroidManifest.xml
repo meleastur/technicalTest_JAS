@@ -14,6 +14,7 @@
         <activity
             android:name=".ui.splash.SplashActivity_"
             android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
+            android:screenOrientation="portrait"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +22,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.MainActivity_" />
-
+        <activity
+            android:name=".ui.main.MainActivity_"
+            android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>

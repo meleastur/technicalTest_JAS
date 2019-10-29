@@ -1,6 +1,5 @@
 package com.meleastur.technicaltest_jas.ui.search_images
 
-import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
@@ -10,16 +9,19 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.meleastur.technicaltest_jas.R
 import com.meleastur.technicaltest_jas.di.component.DaggerSearchImageFragmentComponent
 import com.meleastur.technicaltest_jas.di.module.SearchImagesFragmentModule
 import com.meleastur.technicaltest_jas.model.SearchImage
 import com.meleastur.technicaltest_jas.ui.main.MainActivity
+import org.androidannotations.annotations.Click
 import org.androidannotations.annotations.EFragment
 import org.androidannotations.annotations.OptionsMenu
 import org.androidannotations.annotations.ViewById
@@ -44,11 +46,20 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     @ViewById(R.id.recyclerView)
     protected lateinit var recyclerView: RecyclerView
 
+    @ViewById(R.id.empty_state)
+    protected lateinit var emptyStateParent: RelativeLayout
+
     @ViewById(R.id.text_error)
     protected lateinit var textError: TextView
 
     @ViewById(R.id.image_error)
     protected lateinit var imageError: ImageView
+
+    @ViewById(R.id.chip_pagination)
+    protected lateinit var chipPagination: Chip
+
+    @ViewById(R.id.chip_elements)
+    protected lateinit var chipElements: Chip
 
     // endregion
 
@@ -56,12 +67,14 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     // region vars
     // ==============================
 
+    lateinit var searchImageAdapter: SearchImagesAdapter
     lateinit var searchView: SearchView
     var queryFilterOld: String? = null
     var queryFilterSelected: String? = null
 
-    var adapter: SearchImagesAdapter? = null
-
+    var isLoading: Boolean = false
+    var actualPage: Int = 0
+    var actualPerPage: Int = 0
     // endregion
 
     // ==============================
@@ -96,8 +109,10 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
 
     override fun showProgress(show: Boolean) {
         if (show) {
+            isLoading = true
             progressBar.visibility = View.VISIBLE
         } else {
+            isLoading = false
             progressBar.visibility = View.GONE
         }
     }
@@ -107,20 +122,48 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     }
 
     override fun hideEmptyData() {
+        emptyStateParent.visibility = View.GONE
         imageError.visibility = View.GONE
         textError.visibility = View.GONE
     }
 
     override fun showEmptyDataError(error: String) {
-        imageError.visibility = View.GONE
-        textError.visibility = View.GONE
+        emptyStateParent.visibility = View.VISIBLE
+
+        imageError.visibility = View.VISIBLE
+        imageError.setImageDrawable(activity!!.resources.getDrawable(R.drawable.ic_report_problem))
+        textError.visibility = View.VISIBLE
         textError.text = error
     }
 
-    override fun loadDataSuccess(searchImage: ArrayList<SearchImage>) {
-        adapter = SearchImagesAdapter(activity!!, searchImage, this)
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.adapter = adapter
+    override fun loadDataSuccess(searchImage: ArrayList<SearchImage>, isToAddMore: Boolean) {
+        if (!isToAddMore) {
+            chipPagination.visibility = View.VISIBLE
+            chipPagination.text =
+                getString(R.string.search_image_pagination, searchImage[0].page.toString())
+
+            chipElements.visibility = View.VISIBLE
+            chipElements.text =
+                getString(R.string.search_image_elements, "1", searchImage[0].perPage.toString())
+
+            searchImageAdapter = SearchImagesAdapter(activity!!, searchImage, this)
+            val linearLayout = LinearLayoutManager(activity)
+            recyclerView.layoutManager = linearLayout
+            recyclerView.adapter = searchImageAdapter
+
+        } else {
+            actualPerPage = searchImage.size - 1
+            searchImageAdapter.searchImageList.clear()
+            searchImageAdapter.searchImageList.addAll(searchImage)
+            searchImageAdapter.notifyDataSetChanged()
+        }
+
+        Log.d("Pages", "isToAddMore" + isToAddMore)
+        Log.d("Pages", "actualPage" + actualPage)
+        Log.d("Pages", "actualPerPage" + actualPerPage)
+
+        showProgress(false)
+
     }
 
     // endregion
@@ -130,6 +173,31 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     // ==============================
     override fun itemDetail(searchImage: SearchImage) {
         (activity as MainActivity).presenter.showDetailImageFragment(searchImage)
+    }
+
+    override fun itemPositionChange(page: Int, perPage: Int, position: Int) {
+        updateChipPagination(page, perPage, position)
+    }
+
+    override fun itemBottomReached() {
+        if (!isLoading) {
+            showProgress(true)
+            actualPage += 1
+            presenter.searchImageByText(queryFilterSelected!!, actualPage)
+        }
+
+    }
+    // endregion
+
+    // ==============================
+    // region OnClickListener
+    // ==============================
+
+    @Click(R.id.empty_state)
+    fun onClickEmptyState() {
+        if (actualPerPage != 0) {
+            hideEmptyData()
+        }
     }
 
     // endregion
@@ -150,26 +218,9 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
     //  Fragment.onPrepareOptionsMenu
     // ========================================
     override fun onPrepareOptionsMenu(menu: Menu) {
-
         val searchItem = menu.findItem(R.id.action_search)
         searchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(this)
-
-        val activity = activity
-
-        if (activity != null) {
-            val searchManager = activity.getSystemService(Context.SEARCH_SERVICE) as SearchManager
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.componentName))
-        }
-
-        if (!TextUtils.isEmpty(queryFilterOld)) {
-            queryFilterSelected = queryFilterOld
-            searchItem.expandActionView()
-            searchView.setQuery(queryFilterOld, true)
-        } else {
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(searchView.windowToken, 0)
-        }
 
         menu.findItem(R.id.action_search).isVisible = true
     }
@@ -190,6 +241,9 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
             imm.hideSoftInputFromWindow(searchView.windowToken, 0)
 
             queryFilterSelected = query
+            isLoading = true
+            actualPerPage = 0
+            actualPage = 0
             presenter.searchImageByText(queryFilterSelected!!)
 
             return true
@@ -203,5 +257,28 @@ open class SearchImagesFragment : Fragment(), SearchImagesContract.View,
         return false
     }
 
+    // endregion
+
+    // ==============================
+    // region Metodos privados
+    // ==============================
+    private fun updateChipPagination(page: Int, perPage: Int, position: Int) {
+
+        Log.d("Pages", "pages positions" + page)
+        if (actualPage == 0) {
+            actualPage = page
+        }
+        if (actualPerPage == 0) {
+            actualPerPage = perPage
+        }
+
+        chipPagination.text =
+            getString(R.string.search_image_pagination, page.toString())
+
+        chipElements.text =
+            getString(
+                R.string.search_image_elements, position.toString(), actualPerPage.toString()
+            )
+    }
     // endregion
 }

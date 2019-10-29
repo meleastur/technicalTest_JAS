@@ -1,39 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:layout_height="match_parent">
+    android:background="@color/gray_light">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@color/gray_light"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/item_search_images" />
 
-    <ImageView
-        android:id="@+id/image_error"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_report_problem"
-        android:tint="@android:color/holo_red_dark" />
-
-    <TextView
-        android:id="@+id/text_error"
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_pagination"
         android:layout_width="wrap_content"
+        android:layout_height="@dimen/x_large"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/medium"
+        android:layout_marginEnd="@dimen/x_medium"
+        android:clickable="false"
+        android:padding="6dp"
+        android:text="@string/search_image_pagination"
+        android:textAlignment="center"
+        android:textColor="@color/gray_dark"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:chipBackgroundColor="@color/colorAccent"
+        app:chipStrokeColor="@color/colorPrimary"
+        app:chipStrokeWidth="1dp"
+        app:closeIconEnabled="false"
+        app:elevation="6dp" />
+
+    <RelativeLayout
+        android:id="@+id/empty_state"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/image_error"
         android:layout_centerInParent="true"
-        android:text="@string/error_default"
-        android:textSize="20sp" />
+        android:background="@color/gray_light"
+        android:padding="@dimen/large">
+
+        <ImageView
+            android:id="@+id/image_error"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_search"
+            android:tint="@color/gray_medium" />
+
+        <TextView
+            android:id="@+id/text_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/image_error"
+            android:layout_centerHorizontal="true"
+            android:padding="@dimen/large"
+            android:text="@string/error_default"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/image_error"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@+id/empty_state"
         android:layout_centerInParent="true"
+        android:background="@drawable/bg_progress_circle"
         android:indeterminate="true"
+        android:padding="@dimen/medium"
         android:theme="@style/MyProgressBar"
+        android:tint="@color/colorAccent"
         android:visibility="gone" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_elements"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/x_large"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/x_medium"
+        android:layout_marginBottom="@dimen/medium"
+        android:clickable="false"
+        android:padding="6dp"
+        android:text="@string/search_image_elements"
+        android:textAlignment="center"
+        android:textColor="@color/gray_dark"
+        android:textSize="16sp"
+        android:theme="@style/Widget.MaterialComponents.Chip.Filter"
+        android:visibility="gone"
+        app:chipBackgroundColor="@color/colorAccent"
+        app:chipStrokeColor="@color/colorPrimary"
+        app:chipStrokeWidth="1dp"
+        app:closeIconEnabled="false"
+        app:elevation="6dp" />
 
 </RelativeLayout>

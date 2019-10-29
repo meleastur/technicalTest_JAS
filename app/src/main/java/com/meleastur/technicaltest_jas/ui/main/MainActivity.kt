@@ -40,6 +40,7 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
         setSupportActionBar(toolbar)
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            supportActionBar!!.title = getString(R.string.search_image_frag_title)
         }
 
         injectDependency()
@@ -57,7 +58,10 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
         var detailFragment = supportFragmentManager.findFragmentByTag(DETAIL_IMAGE)
 
         if (detailFragment != null) {
-            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            if (supportActionBar != null) {
+                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+                supportActionBar!!.title = getString(R.string.search_image_frag_title)
+            }
 
             var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
 
@@ -92,13 +96,21 @@ open class MainActivity : AppCompatActivity(), MainContract.View {
     // ==============================
     @AfterViews
     override fun showSearchImagesFragment() {
+        if (supportActionBar != null) {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            supportActionBar!!.title = getString(R.string.search_image_frag_title)
+        }
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.frameLayout, SearchImagesFragment().newInstance(), SEARCH_IMAGES)
             .commit()
     }
 
     override fun showDetailImageFragment(searchImage: SearchImage) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        if (supportActionBar != null) {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            supportActionBar!!.title = getString(R.string.detail_image_title)
+        }
 
         var searchFragment = supportFragmentManager.findFragmentByTag(SEARCH_IMAGES)
 
