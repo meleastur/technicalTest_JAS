@@ -9,7 +9,12 @@ import dagger.Provides
 
 
 @Module
-class DetailImageFragmentModule {
+class FragmentModule {
+
+    @Provides
+    fun provideSearchImagesPresenter(): SearchImagesContract.Presenter {
+        return SearchImagesPresenter()
+    }
 
     @Provides
     fun provideDetailImagePresenter(): DetailImageContract.Presenter {

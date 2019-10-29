@@ -35,11 +35,10 @@ class SearchImagesAdapter(
         holder.title.text = searchImage.title
         holder.author.text = searchImage.author
 
-        var url: URL? = null
         // TODO
         //  Checkear searchImage.thumbnailURL en el parseo del Presenter
         try {
-            url = URL(searchImage.thumbnailURL)
+            val url = URL(searchImage.thumbnailURL)
             Glide.with(fragment)
                 .load(url)
                 .centerCrop()
