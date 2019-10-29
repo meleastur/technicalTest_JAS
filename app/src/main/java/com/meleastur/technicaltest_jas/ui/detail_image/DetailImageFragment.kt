@@ -1,23 +1,30 @@
 package com.meleastur.technicaltest_jas.ui.detail_image
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
 import com.meleastur.technicaltest_jas.R
-import com.meleastur.technicaltest_jas.di.component.DaggerDetailImageFragmentComponent
-import com.meleastur.technicaltest_jas.di.module.DetailImageFragmentModule
+import com.meleastur.technicaltest_jas.di.component.DaggerFragmentComponent
+import com.meleastur.technicaltest_jas.di.module.FragmentModule
 import com.meleastur.technicaltest_jas.model.SearchImage
-import org.androidannotations.annotations.Click
-import org.androidannotations.annotations.EFragment
-import org.androidannotations.annotations.FragmentArg
-import org.androidannotations.annotations.ViewById
+import com.meleastur.technicaltest_jas.util.GenericCallback
+import com.meleastur.technicaltest_jas.util.PermisionHelper
+import com.meleastur.technicaltest_jas.util.Utils
+import com.stfalcon.imageviewer.StfalconImageViewer
+import org.androidannotations.annotations.*
 import java.net.URL
 import javax.inject.Inject
+
 
 @EFragment(R.layout.fragment_detail_image)
 open class DetailImageFragment : Fragment(), DetailImageContract.View {
@@ -59,8 +66,17 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
     // ==============================
     // region vars
     // ==============================
+    private var currentPosition: Int = 0
 
+    private lateinit var viewer: StfalconImageViewer<String>
+    private lateinit var bitmap: Bitmap
     // endregion
+
+    @Bean
+    protected lateinit var permisionHelper: PermisionHelper
+
+    @Bean
+    protected lateinit var utils: Utils
 
     // ==============================
     // region Fragment
@@ -85,12 +101,29 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
         super.onResume()
 
         try {
-            val url = URL(searchImage.thumbnailURL)
+            val urlImage = URL(searchImage.thumbnailURL)
+
             Glide.with(this)
-                .load(url)
-                .into(thumbnailImage)
+                .asBitmap()
+                .load(urlImage)
+                .override(1920, 1080)
+                .centerInside()
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        bitmap = resource
+                        thumbnailImage.setImageBitmap(resource)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
+
         } catch (e: Exception) {
             Log.e("onBindViewHolder", "DetailImage - Glide: " + e.localizedMessage)
+
             Glide.with(this)
                 .load(R.drawable.ic_photo)
                 .into(thumbnailImage)
@@ -126,8 +159,8 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
     // region Dagger
     // ==============================
     private fun injectDependency() {
-        val component = DaggerDetailImageFragmentComponent.builder()
-            .detailImageFragmentModule(DetailImageFragmentModule())
+        val component = DaggerFragmentComponent.builder()
+            .fragmentModule(FragmentModule())
             .build()
 
         component.inject(this)
@@ -139,10 +172,81 @@ open class DetailImageFragment : Fragment(), DetailImageContract.View {
     // ==============================
     @Click(R.id.image_thumbnail)
     fun clickThumbnailImage() {
-        // Open viewer 
+        openViewer(currentPosition)
+    }
+
+    @Click(R.id.fab_share)
+    fun clickShareButton() {
+        askWriteStorage()
     }
 
     // endregion
 
+    // ==============================
+    // region métodos privados
+    // ==============================
 
+    // Viewer de la imagen
+    private fun openViewer(startPosition: Int) {
+        val list = listOf(searchImage.thumbnailURL)
+        viewer = StfalconImageViewer.Builder<String>(activity, list, ::loader)
+            .withHiddenStatusBar(false)
+            .withTransitionFrom(getTransitionTarget(startPosition))
+            .withStartPosition(startPosition)
+            .withImageChangeListener {
+                currentPosition = it
+                viewer.updateTransitionImage(getTransitionTarget(it))
+            }
+            .show()
+    }
+
+    // Loader de Glide
+    private fun loader(imageView: ImageView, searchImage: String) {
+        imageView.apply {
+            Glide.with(this)
+                .load(searchImage)
+                .override(1920, 1080)
+                .centerInside()
+                .into(imageView)
+        }
+    }
+
+    // Para el sharedElement de StFalcon
+    private fun getTransitionTarget(position: Int) =
+        if (position == 0) thumbnailImage else null
+
+
+    // Permiso de escritura
+    private fun askWriteStorage() {
+        permisionHelper.askForWriteStorage(activity!!, object : GenericCallback {
+            override fun onSuccess() {
+                shareURLImage()
+            }
+
+            override fun onError(error: String?) {
+                Toast.makeText(
+                    activity, R.string.share_image_error, Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    // Intent Compartir
+    private fun shareURLImage() {
+        val bmpUri = utils.getLocalBitmapUri(activity!!, bitmap)
+        if (bmpUri != null) {
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri)
+            shareIntent.type = "image/*"
+
+            startActivity(Intent.createChooser(shareIntent, "Compartir con"))
+        } else {
+            Toast.makeText(
+                activity, R.string.share_image_error, Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // endregion
 }

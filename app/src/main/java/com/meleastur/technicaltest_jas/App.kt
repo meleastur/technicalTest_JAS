@@ -3,7 +3,6 @@ package com.meleastur.technicaltest_jas
 import android.app.Application
 import com.meleastur.technicaltest_jas.di.component.ApplicationComponent
 import com.meleastur.technicaltest_jas.di.component.DaggerApplicationComponent
-import com.meleastur.technicaltest_jas.di.module.ApplicationModule
 
 class App: Application() {
 
@@ -35,8 +34,7 @@ class App: Application() {
     // ==============================
 
     fun initApp() {
-        component = DaggerApplicationComponent.builder()
-                .applicationModule(ApplicationModule(this)).build()
+        component = DaggerApplicationComponent.builder().build()
         component.inject(this)
     }
 
